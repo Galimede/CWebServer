@@ -26,7 +26,7 @@ socket_serveur = socket (AF_INET, SOCK_STREAM , 0);
 
 	if (bind (socket_serveur,(struct sockaddr *) &saddr, sizeof(saddr)) == -1) {
 		/* traitement de l ’ erreur */
-		perror("bind socker_serveur");
+		perror("bind socket_serveur");
 	}
 	
 	// Enfin on demande au système de pouvoir écouter sur le port et de pouvoir attendre des connexions 
@@ -39,12 +39,13 @@ socket_serveur = socket (AF_INET, SOCK_STREAM , 0);
 	// /!\ LA FONCTION ACCEPT EST BLOQUANTE 
 
 	int socket_client ;
+	
 	socket_client = accept ( socket_serveur , NULL , NULL );
-	if ( socket_client == -1)
-	{
+	if ( socket_client == -1) {
 		perror ( " accept " );
 		/* traitement d ’ erreur */
 	}
+	
 	/* On peut maintenant dialoguer avec le client */
 	const char * message_bienvenue = "Bonjour\nbienvenue sur le serveur (ou pas)\nc'est encore en construction\nmais ne vous inquietez pas \non travaille dur pour le rendre op sous peu \nj'espere que ca vous plaira\nen attendant allez prendre un cafe\nou un croissant qui sait ?\nOu...\nrevenez plus tard" ;
 	write ( socket_client , message_bienvenue , strlen ( message_bienvenue ));
