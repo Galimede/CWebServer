@@ -1,0 +1,5 @@
+3.2.1 :
+  1/Le client a été déconnecté, on doit attendre avant de redemarrer (bind echoue)
+  2/Le serv plante, -z n'initie pas de connexion au serv, il informe juste le port trouvé
+  3/La connexion est refusée(le serv n'accepte pas les ipv6)
+  4/Le 2e client s'arrete instantanement
