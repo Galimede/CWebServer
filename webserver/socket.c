@@ -32,26 +32,11 @@ int creer_serveur(int port) {
 		perror("bind socket_serveur");
 	}
 
-	// Enfin on demande au système de pouvoir écouter sur le port et de pouvoir attendre des connexions
+	// Enfin on demande au système de pouvoir écouter sur le port
 	if (listen (socket_serveur, 10) == -1) {
 		perror ("listen socket_serveur");
 		/* traitement d ’ erreur */
 	}
 
-	// Maintenant on peu accepter des connexions des clients
-	// /!\ LA FONCTION ACCEPT EST BLOQUANTE
-
-	int socket_client ;
-	while(1) {
-		socket_client = accept ( socket_serveur , NULL , NULL );
-		if ( socket_client == -1) {
-			perror ( " accept " );
-			/* traitement d ’ erreur */
-		}
-
-		/* On peut maintenant dialoguer avec le client */
-		const char * message_bienvenue = "Bonjour\nbienvenue sur le serveur (ou pas)\nc'est encore en construction\nmais ne vous inquietez pas \non travaille dur pour le rendre op sous peu \nj'espere que ca vous plaira\nen attendant allez prendre un cafe\nou un croissant qui sait ?\nOu...\nrevenez plus tard" ;
-		write ( socket_client , message_bienvenue , strlen ( message_bienvenue ));
-	}
-	return 0;
+	return socket_serveur;
 }
