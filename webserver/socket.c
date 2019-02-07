@@ -8,13 +8,13 @@
 
 int creer_serveur(int port) {
 
-// On crée d'abord la socket
-int socket_serveur ;
-socket_serveur = socket (AF_INET, SOCK_STREAM , 0);
+	// On crée d'abord la socket
+	int socket_serveur ;
+	socket_serveur = socket (AF_INET, SOCK_STREAM , 0);
 
 	if (socket_serveur == -1) {
-	/* traitement de l ’ erreur */
-	perror("socket_serveur");
+		/* traitement de l ’ erreur */
+		perror("socket_serveur");
 	}
 	/* Utilisation de la socket serveur */
 
@@ -25,8 +25,8 @@ socket_serveur = socket (AF_INET, SOCK_STREAM , 0);
 	saddr.sin_addr.s_addr = INADDR_ANY; /* écoute sur toutes les interfaces */
 
 	int optval = 1;
-if ( setsockopt ( socket_serveur , SOL_SOCKET , SO_REUSEADDR , & optval , sizeof ( int )) == -1)
-perror ( " Can not set SO_REUSEADDR option " );
+	if ( setsockopt ( socket_serveur , SOL_SOCKET , SO_REUSEADDR , & optval , sizeof ( int )) == -1)
+	perror ( " Can not set SO_REUSEADDR option " );
 	if (bind (socket_serveur,(struct sockaddr *) &saddr, sizeof(saddr)) == -1) {
 		/* traitement de l ’ erreur */
 		perror("bind socket_serveur");
@@ -42,16 +42,16 @@ perror ( " Can not set SO_REUSEADDR option " );
 	// /!\ LA FONCTION ACCEPT EST BLOQUANTE
 
 	int socket_client ;
-    while(1) {
-	socket_client = accept ( socket_serveur , NULL , NULL );
-	if ( socket_client == -1) {
-		perror ( " accept " );
-		/* traitement d ’ erreur */
-	}
+	while(1) {
+		socket_client = accept ( socket_serveur , NULL , NULL );
+		if ( socket_client == -1) {
+			perror ( " accept " );
+			/* traitement d ’ erreur */
+		}
 
-	/* On peut maintenant dialoguer avec le client */
-	const char * message_bienvenue = "Bonjour\nbienvenue sur le serveur (ou pas)\nc'est encore en construction\nmais ne vous inquietez pas \non travaille dur pour le rendre op sous peu \nj'espere que ca vous plaira\nen attendant allez prendre un cafe\nou un croissant qui sait ?\nOu...\nrevenez plus tard" ;
-	write ( socket_client , message_bienvenue , strlen ( message_bienvenue ));
-}
+		/* On peut maintenant dialoguer avec le client */
+		const char * message_bienvenue = "Bonjour\nbienvenue sur le serveur (ou pas)\nc'est encore en construction\nmais ne vous inquietez pas \non travaille dur pour le rendre op sous peu \nj'espere que ca vous plaira\nen attendant allez prendre un cafe\nou un croissant qui sait ?\nOu...\nrevenez plus tard" ;
+		write ( socket_client , message_bienvenue , strlen ( message_bienvenue ));
+	}
 	return 0;
 }
