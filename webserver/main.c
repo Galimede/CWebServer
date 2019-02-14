@@ -48,8 +48,14 @@ int main(void)
     }
     if (pid == 0){
       /* On peut maintenant dialoguer avec le client */
+      FILE *fp = fdopen(socket_client,"w+");
       const char *message_bienvenue = "Bonjour\nbienvenue sur le serveur (ou pas)\nc'est encore en construction\nmais ne vous inquietez pas \non travaille dur pour le rendre op sous peu \nj'espere que ca vous plaira\nen attendant allez prendre un cafe\nou un croissant qui sait ?\nOu...\nrevenez plus tard";
-      write(socket_client, message_bienvenue, strlen(message_bienvenue));
+      //write(socket_client, message_bienvenue, strlen(message_bienvenue));
+      fwrite(message_bienvenue, strlen(message_bienvenue), 1, fp);
+      char s[200];
+      fread(s, strlen(s), 1,fp);
+      printf("%s\n", s);
+      fclose(fp);
     } else{
       close(socket_client);
     }
