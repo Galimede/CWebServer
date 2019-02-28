@@ -50,15 +50,12 @@ int main(void)
     if (pid == 0){
       /* On peut maintenant dialoguer avec le client */
       FILE *fp = fdopen(socket_client,"w+");
-      const char *message_bienvenue = "Bonjour\nbienvenue sur le serveur (ou pas)\nc'est encore en construction\nmais ne vous inquietez pas \non travaille dur pour le rendre op sous peu \nj'espere que ca vous plaira\nen attendant allez prendre un cafe\nou un croissant qui sait ?\nOu...\nrevenez plus tard\n";
+      const char *message_bienvenue = "Bonjour\nbienvenue sur le serveur (ou pas)\nc'est encore en construction\nmais ne vous inquietez pas \non travaille dur pour le rendre op sous peu \nj'espere que ca vous plaira\nen attendant allez prendre un cafe\nou un croissant qui sait ?\nOu...\nrevenez plus tard\n\n";
       //write(socket_client, message_bienvenue, strlen(message_bienvenue));
       fwrite(message_bienvenue, strlen(message_bienvenue), 1, fp);
-      char s[200];
-      strcat(s,"<CWebServer>");
+      char s[16];
       fgets(s,strlen(s),fp);
-      char s2 [200] = s*;
-      
-      fprintf(fp,"%s\n", s2);
+      fprintf(fp,"<WebServer>\n%s</WebServer>\n",s );
       fclose(fp);
     } else{
       close(socket_client);
