@@ -51,14 +51,12 @@ int main(void)
       /* On peut maintenant dialoguer avec le client */
       FILE *fp = fdopen(socket_client,"w+");
       const char *message_bienvenue = "Bonjour\nbienvenue sur le serveur (ou pas)\nc'est encore en construction\nmais ne vous inquietez pas \non travaille dur pour le rendre op sous peu \nj'espere que ca vous plaira\nen attendant allez prendre un cafe\nou un croissant qui sait ?\nOu...\nrevenez plus tard\n\n";
-      //write(socket_client, message_bienvenue, strlen(message_bienvenue));
-      //fwrite(message_bienvenue, strlen(message_bienvenue), 1, fp);
       fprintf(fp, "%s",message_bienvenue);
       int taillemsg = 100;
       char s[taillemsg];
       fgets(s,taillemsg,fp);
-      printf("%lu\n",strlen(s) );
-      fprintf(fp,"<WebServer>\n%s</WebServer>\n",s );
+      //fprintf(fp,"<WebServer>\n%s</WebServer>\n",s );
+      printf("Client : %s", s);
       fclose(fp);
     } else{
       close(socket_client);
