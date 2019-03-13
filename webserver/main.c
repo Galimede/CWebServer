@@ -54,8 +54,8 @@ int main(void)
     {
       /* On peut maintenant dialoguer avec le client */
       FILE *fp = fdopen(socket_client, "w+");
-      /*const char *message_bienvenue = "Bonjour\nbienvenue sur le serveur (ou pas)\nc'est encore en construction\nmais ne vous inquietez pas \non travaille dur pour le rendre op sous peu \nj'espere que ca vous plaira\nen attendant allez prendre un cafe\nou un croissant qui sait ?\nOu...\nrevenez plus tard\n\n";
-      fprintf(fp, "%s", message_bienvenue);*/
+      const char *message_bienvenue = "Bonjour\nbienvenue sur le serveur (ou pas)\nc'est encore en construction\nmais ne vous inquietez pas \non travaille dur pour le rendre op sous peu \nj'espere que ca vous plaira\nen attendant allez prendre un cafe\nou un croissant qui sait ?\nOu...\nrevenez plus tard";
+      //fprintf(fp, "%s", message_bienvenue);
       int taillemsg = 200;
       char s[taillemsg];
       fgets(s, taillemsg, fp);
@@ -66,11 +66,18 @@ int main(void)
       {
         retourligne = '\0';
       }*/
-      if(strcmp("GET / HTTP/1.1\r\n",s)) {
-          //fprintf(fp,"HTTP/1.1 400 Bad Request\r\nConnection: close\r\nContent-Length: 17\r\n\r\n400 Bad request\r\n",s);
+      // On verifie si l'entête est correcte ou non
+      if(strcmp("GET / HTTP/1.1\r\n",s) < 0) {
+        fprintf(fp,"HTTP/1.1 400 Bad Request\r\nConnection: close\r\nContent-Length: 17\r\n\r\n400 Bad request\r\n");  
       } else {
-        fprintf(fp,"HTTP/1.1 400 Bad Request\r\nConnection: close\r\nContent-Length: 17\r\n\r\n400 Bad request\r\n");
+      while(strcmp("\r\n",s) == 0) {
+        fgets(s, taillemsg, fp);
+        strcat(s,"\r\n");
       }
+        fprintf(fp,"HTTP/1.1 200 OK\r\nConnection: close\r\nContent-Length: %li\r\n\r\n%s\r\n",strlen(message_bienvenue),message_bienvenue);
+      }
+
+
       fclose(fp);
     }
     else
