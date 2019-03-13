@@ -8,7 +8,6 @@
 #include "socket.h"
 #include <sys/wait.h>
 
-
 void traitement_signal(int sig)
 {
   int status = 0;
@@ -58,8 +57,10 @@ int main(void)
       //fprintf(fp, "%s", message_bienvenue);
       int taillemsg = 200;
       char s[taillemsg];
-      fgets(s, taillemsg, fp);
-      strcat(s, "\r\n");
+      //fgets(s, taillemsg, fp);
+      //strcat(s, "\r\n");
+      //printf("Client : %s\n",s);
+
       /*char * retour = fgets(s, taillemsg, fp);
       char *retourligne = strcat(s, "\r\n");
       if (retourligne != NULL)
@@ -67,17 +68,22 @@ int main(void)
         retourligne = '\0';
       }*/
       // On verifie si l'entête est correcte ou non
-      if(strcmp("GET / HTTP/1.1\r\n",s) < 0) {
-        fprintf(fp,"HTTP/1.1 400 Bad Request\r\nConnection: close\r\nContent-Length: 17\r\n\r\n400 Bad request\r\n");  
-      } else {
-      while(strcmp("\r\n",s) == 0) {
-        fgets(s, taillemsg, fp);
-        strcat(s,"\r\n");
+      fgets(s, taillemsg, fp);
+      //strcat(s, "\r\n");
+      //s[strlen(s)-1] = '\0';
+      printf("Client : %s\n", s);
+      if (strncmp(s,"GET / HTTP/1.1",strlen("GET / HTTP/1.1")) == 0)
+      {
+       while (strcmp(s, "\r\n") != 0)
+        {
+          fgets(s, strlen(s), fp);
+        }
+        fprintf(fp, "HTTP/1.1 200 OK\nConnection: close\r\nContent-Length: %li\r\n\r\n%s\r\n", strlen(message_bienvenue), message_bienvenue);
+      } else if (strcmp("GET / HTTP/1.1\r\n", s) != 0)
+      {
+        fprintf(fp, "HTTP/1.1 400 Bad Request\r\nConnection: close\r\nContent-Length: 17\r\n\r\n400 Bad request\r\n");
       }
-        fprintf(fp,"HTTP/1.1 200 OK\r\nConnection: close\r\nContent-Length: %li\r\n\r\n%s\r\n",strlen(message_bienvenue),message_bienvenue);
-      }
-
-
+      
       fclose(fp);
     }
     else
