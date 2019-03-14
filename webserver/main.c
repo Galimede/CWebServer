@@ -83,7 +83,11 @@ int main(void)
       else if (strcmp("GET / HTTP/1.1\r\n", s) != 0)
       {
         fprintf(fp, "HTTP/1.1 400 Bad Request\r\nHost: localhost:8080\r\nConnection: close\r\nContent-Length: 17\r\n\r\n400 Bad request\r\n");
+      }else if (strcmp("GET /inexistant HTTP/1.1\r\n", s) == 0)
+      {
+        fprintf(fp, "HTTP/1.1 404 Not Found\r\nConnection: close\r\nContent-Length: 13\r\n\r\n404 Not Found\r\n");
       }
+
 
       fclose(fp);
     }
