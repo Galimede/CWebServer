@@ -72,18 +72,19 @@ int main(void)
       //strcat(s, "\r\n");
       //s[strlen(s)-1] = '\0';
       printf("Client : %s\n", s);
-      if (strncmp(s,"GET / HTTP/1.1",strlen("GET / HTTP/1.1")) == 0)
+      if (strncmp(s, "GET / HTTP/1.1", strlen("GET / HTTP/1.1")) == 0)
       {
-       while (strcmp(s, "\r\n") != 0)
+        do
         {
-          fgets(s, strlen(s), fp);
-        }
-        fprintf(fp, "HTTP/1.1 200 OK\nConnection: close\r\nContent-Length: %li\r\n\r\n%s\r\n", strlen(message_bienvenue), message_bienvenue);
-      } else if (strcmp("GET / HTTP/1.1\r\n", s) != 0)
-      {
-        fprintf(fp, "HTTP/1.1 400 Bad Request\r\nConnection: close\r\nContent-Length: 17\r\n\r\n400 Bad request\r\n");
+          fgets(s, taillemsg, fp);
+        } while (strcmp(s, "\r\n") != 0);
+        fprintf(fp, "HTTP/1.1 200 OK\r\nHost: localhost:8080\r\nConnection: close\r\nContent-Length: %li\r\n\r\n%s\r\n", strlen(message_bienvenue), message_bienvenue);
       }
-      
+      else if (strcmp("GET / HTTP/1.1\r\n", s) != 0)
+      {
+        fprintf(fp, "HTTP/1.1 400 Bad Request\r\nHost: localhost:8080\r\nConnection: close\r\nContent-Length: 17\r\n\r\n400 Bad request\r\n");
+      }
+
       fclose(fp);
     }
     else
