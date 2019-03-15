@@ -97,5 +97,4 @@ char * fgets_or_exit(char * buffer, int size, FILE * stream)
 void skip_headers(FILE * client){	const int BUFFSIZE = 1024;	char buffer[BUFFSIZE];	do
 	{
 		fgets_or_exit(buffer, BUFFSIZE, client);
-	} while (strcmp(buffer, "\r\n") != 0);}void send_status(FILE * client, int code, const char * reason_phrase){	fprintf(client, "HTTP/1.1 %d %s\r\n", code, reason_phrase);}void send_response(FILE * client, int code, const char * reason_phrase, const char * message_body){	send_status(client, code, reason_phrase);	fprintf(client, "Host: localhost:8080\r\nConnection: close\r\nContent-Length: %li\r\n\r\n%s\r\n", strlen(message_body), message_body);}
-
+	} while (strcmp(buffer, "\r\n") != 0);}void send_status(FILE * client, int code, const char * reason_phrase){	fprintf(client, "HTTP/1.1 %d %s\r\n", code, reason_phrase);}void send_response(FILE * client, int code, const char * reason_phrase, const char * message_body){	send_status(client, code, reason_phrase);	fprintf(client, "Host: localhost:8080\r\nConnection: close\r\nContent-Length: %li\r\n\r\n%s\r\n", strlen(message_body), message_body);}
