@@ -9,6 +9,9 @@
 #include <sys/wait.h>
 #include "prototype.h"
 #include "http_parse.h"
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <dirent.h>
 
 void traitement_signal(int sig)
 {
@@ -34,12 +37,27 @@ void initialiser_signaux(void)
 	}
 }
 
-int main(void)
+int main(int argc, char **argv)
 {
+
+	if (argc != 2) {
+		printf("Command works like this : ./pawnee DIRECTORY\n");
+		return 1;
+	}
+		
+	DIR *dir = opendir(argv[1]);
+	if (dir == NULL)
+	{
+		perror(argv[1]);
+		return 1;
+	}
+
 	initialiser_signaux();
 	int s_serveur = creer_serveur(8080);
 
 	int socket_client;
+
+	FILE * ressource;
 	while (1)
 	{
 		/* On attend la connexion du client */
@@ -65,6 +83,7 @@ int main(void)
 			http_request request;
 			int parse_request = parse_http_request(buffer, &request);
 			printf("TARGET ----> %s\n", request.target);
+			rewrite_target(request.target);
 
 			if (parse_request == 0)
 				send_response(client, 400, "Bad Request", "Bad request\r\n");
@@ -72,9 +91,13 @@ int main(void)
 				send_response(client, 405, "Method Not Allowed", "Method Not Allowed\r\n");
 			else if (strcmp(request.target, "/") == 0)
 				send_response(client, 200, " OK ", motd);
-			else
-				send_response(client, 404, "Not Found", "Not Found\r\n");
-
+			else {
+				ressource = check_and_open(request.target, argv[1]);
+				if (ressource == NULL)
+					send_response(client, 404, "Not Found", "Not Found\r\n");
+				
+			}
+				
 			fclose(client);
 		}
 		else
@@ -94,7 +117,85 @@ char * fgets_or_exit(char * buffer, int size, FILE * stream)
 	return message;
 }
 
-void skip_headers(FILE * client){	const int BUFFSIZE = 1024;	char buffer[BUFFSIZE];	do
+void skip_headers(FILE * client)
+{
+	const int BUFFSIZE = 1024;
+	char buffer[BUFFSIZE];
+	do
 	{
 		fgets_or_exit(buffer, BUFFSIZE, client);
-	} while (strcmp(buffer, "\r\n") != 0);}void send_status(FILE * client, int code, const char * reason_phrase){	fprintf(client, "HTTP/1.1 %d %s\r\n", code, reason_phrase);}void send_response(FILE * client, int code, const char * reason_phrase, const char * message_body){	send_status(client, code, reason_phrase);	fprintf(client, "Host: localhost:8080\r\nConnection: close\r\nContent-Length: %li\r\n\r\n%s\r\n", strlen(message_body), message_body);}
+	} while (strcmp(buffer, "\r\n") != 0);
+}
+
+void send_status(FILE * client, int code, const char * reason_phrase)
+{
+	fprintf(client, "HTTP/1.1 %d %s\r\n", code, reason_phrase);
+}
+
+void send_response(FILE * client, int code, const char * reason_phrase, const char * message_body)
+{
+	send_status(client, code, reason_phrase);
+	//fprintf(client, "Host: localhost:8080\r\nConnection: close\r\nContent-Length: %li\r\n\r\n%s\r\n", strlen(message_body), message_body);
+	fprintf(client, "Host: localhost:8080\r\nConnection: close\r\nContent-Length: %li\r\n\r\n%s\r\n", strlen(message_body), message_body);
+
+}
+
+char * rewrite_target(char * target) 
+{
+	char * search = strchr(target, '?');
+	if (search) {
+		char * dest = (char*)malloc(sizeof(char));
+		int index = search - target;
+		memcpy(dest, target, index);
+		return dest;
+	}
+	return target;
+}
+
+FILE * check_and_open(const char * target, const char * document_root)
+{
+	FILE *fp;
+	char path[strlen(document_root)];
+	strcpy(path, document_root);
+	strcat(path, target);
+	printf("(DEBUG) RESSOURCE PATH --> %s\n", path);
+	if ((fp = fopen(path, "r")) == NULL)
+	{
+		return NULL;
+	}
+	return fp;
+}
+
+int get_file_size(int fd)
+{
+
+	struct stat fileStat;
+	if (fstat(fd, &fileStat) < 0) 
+		return 1;
+	return fileStat.st_size;
+}
+
+/*int copy(FILE *in, FILE *out)
+{
+	if (fopen(in, "r") == NULL)
+	{
+		return 1;
+	}
+
+	if (fopen(out, "w") == NULL)
+	{
+		return 1;
+	}
+	
+	c = fgetc(fptr1);
+	while (c != EOF)
+	{
+		fputc(c, fptr2);
+		c = fgetc(fptr1);
+	}
+	
+	fclose(fptr1);
+	fclose(fptr2);
+	
+	return 0;
+}*/
